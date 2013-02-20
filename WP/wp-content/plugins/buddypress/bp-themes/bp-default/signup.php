@@ -3,8 +3,12 @@
 Template Name: SignUp
 */
 ?>
-
+<?php
+$array;
+?>
 <link rel="stylesheet" type="text/css" href="http://xoxco.com/projects/code/tagsinput/jquery.tagsinput.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script> 
+    <script src="http://malsup.github.com/jquery.form.js"></script> 
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
 	<script type="text/javascript" src="http://xoxco.com/projects/code/tagsinput/jquery.tagsinput.js"></script>
 	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'></script>
@@ -13,6 +17,31 @@ Template Name: SignUp
 		
 		function onAddTag(tag) {
 			alert("Added a tag: " + tag);
+		//start the ajax
+        $.ajax({
+            //this is the php file that processes the data and send mail
+            url: "wp-content/plugins/buddypress/bp-themes/bp-default/save_tag.php", 
+             
+            //GET method is used
+            type: "POST",
+ 
+            //pass the data         
+             data: {data: tag},
+             
+            //Do not cache the page
+            cache: false,
+             
+            //success
+            success: function (id) {              
+                //if process.php returned 1/true (send mail success)
+                $id_tags = document.getElementById("id_tags");
+                $val = $id_tags.value;
+                $id_tags.value = $val + id + "/"
+                alert("OK! "+ $val);
+
+            },
+
+        });
 		}
 		function onRemoveTag(tag) {
 			alert("Removed a tag: " + tag);
@@ -21,10 +50,19 @@ Template Name: SignUp
 		function onChangeTag(input,tag) {
 			alert("Changed a tag: " + tag);
 		}
+
+		function showResult(){
+			alert("OK!");
+		}
+		/*$(document).ready(function(){
+			$.post('insert.php'
+		}*/
 		
 		$(function() {
-
-			$('#tags_1').tagsInput({width:'auto'});
+			$('#tags_1').tagsInput({
+				width:'auto',
+				'onAddTag':onAddTag
+				});
 			$('#tags_2').tagsInput({
 				width: 'auto',
 				onChange: function(elem, elem_tags)
@@ -273,8 +311,11 @@ Template Name: SignUp
 				</select>
 			</br>
 			</br>
+			<form id="frm_test" action="save_tag.php" method="post">
 				<p><label>Tags:</label>
-				<input id="tags_1" type="text" class="tags" value="foo,bar,baz,roffle" /></p>
+				<input id="tags_1" type="text" class="tags" value="" /></p>
+				<input id="id_tags" type="hidden" value="">
+			</form>
 			</br>
 			</br>
 				<input type="submit" value="Submit"/>
